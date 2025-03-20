@@ -351,13 +351,14 @@ Private.OnEnable = function(self)
 	if (ContainerFrame_Update) then
 		hooksecurefunc("ContainerFrame_Update", UpdateContainer)
 	else
-		-- Dragonflight and up
-		local id = 1
-		local frame = _G["ContainerFrame"..id]
-		while (frame and frame.Update) do
-			hooksecurefunc(frame, "Update", UpdateContainer)
-			id = id + 1
-			frame = _G["ContainerFrame"..id]
+		-- Dragonflight and up hook to container frames
+		local UpdateContainerRetail = function(frame)
+			for _, itemButton in frame:EnumerateValidItems() do
+				Update(itemButton, itemButton:GetBagID(), itemButton:GetID())
+			end
+		end
+		for _, frame in ipairs((ContainerFrameContainer or UIParent).ContainerFrames) do
+			hooksecurefunc(frame, "Update", UpdateContainerRetail)
 		end
 	end
 
